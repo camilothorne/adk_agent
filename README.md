@@ -13,7 +13,7 @@ It is meant to be deployed as a GCP cloud run.
 
 ## GCP authentication
 
-Running this agent on a localhost requires prior authentication to GCP. On the command line, type:
+Running this agent on a localhost requires prior authentication to GCP. It also requires activating the VertexAI and Gemini APIs on GCP. On the command line, type:
 
 ```bash
 gcloud auth login # get a session token
@@ -60,7 +60,7 @@ Unit tests ensure agent's basic abilities, in particular enforce that answers ar
     The test succeeds if ROUGE-1 is equal or greater than 0.2.
 * `response_evaluation_score`. This criterion measures Google's **[pointwise coherence metric](https://cloud.google.com/vertex-ai/generative-ai/docs/models/metrics-templates#pointwise_coherence)**, an LLM-based ordinal score ranging from 0 to 5, that assesses the logical cohesion of an agent responses. We define success as scoring at least 2.
 
-We follow ADK's testing practices for `pytest`, using as test set dataset `evalset.test.json`, and as configuration file: `test_config.json`. The tests are located under ``tests`. In order for them to work, you'll need to create another `.env`:
+We follow ADK's testing practices for `pytest`, using as test set dataset `evalset.test.json`, and as configuration file: `test_config.json`. The tests are located under `tests`. In order for them to work, you'll need to create another `.env` file in the testing directory:
 ```bash
 cd tests
 echo -e "GOOGLE_GENAI_USE_VERTEXAI=TRUE\nGOOGLE_CLOUD_PROJECT=<PROJECT_ID>\nGOOGLE_CLOUD_LOCATION=<GEMINI_REGION>" >> .env
