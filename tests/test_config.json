@@ -1,0 +1,6 @@
+{
+  "criteria": {
+    "response_match_score": 0.1,
+    "response_evaluation_score": 2
+  }
+}
