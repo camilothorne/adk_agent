@@ -1,9 +1,6 @@
 # Conversational agent
 
-This repo contains the code for the IBAIC chatbot, built using Google's [Agent Development Kit](https://google.github.io/adk-docs/) (ADK), and relies on the following GCP project variables:
-
-* **PROJECT_ID** = ``
-* **GEMINI_REGION** = ``
+This repo contains a simple LLM-powered conversationla agent built using Google's [Agent Development Kit](https://google.github.io/adk-docs/) (ADK).
 
 This project was written with Python 3.13.x, and assumes familiarity with `venv`:
 ```bash
@@ -12,12 +9,14 @@ source .venv/bin/activate
 pip install -r requirements
 ```
 
+It is meant to be deployed as a GCP cloud run.
+
 ## GCP authentication
 
 Running this agent on a localhost requires prior authentication to GCP. On the command line, type:
 
 ```bash
-gcloud auth login <your_name>@<domain> # get a session token
+gcloud auth login # get a session token
 gcloud auth application-default login # authorize client libraries
 ```
 
