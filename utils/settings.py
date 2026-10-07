@@ -5,5 +5,6 @@ import os
 
 DEFAULT_MCP_SERVER_URL = os.getenv('MCP_SERVER_URL', 
                                    "https://knowledge-graph-mcp-1098449730426.us-central1.run.app/mcp")
-DEFAULT_MCP_TOOLS = ["query_dbpedia", 
+DEFAULT_MCP_TOOLS = ["query_dbpedia",
+		     "query_arxiv", 
                      "query_dblp_topic"]
