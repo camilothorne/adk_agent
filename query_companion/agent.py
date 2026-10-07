@@ -1,6 +1,11 @@
 import json
+import logging
 import os
+import warnings
 from google.adk.agents import Agent
+from google.adk.agents.callback_context import CallbackContext
+from google.adk.models import LlmResponse
+from google.adk.tools import FunctionTool
 from google.adk.tools.mcp_tool import MCPToolset
 from google.adk.tools.mcp_tool.mcp_session_manager import (
     SseServerParams,
@@ -9,10 +14,25 @@ from google.adk.tools.mcp_tool.mcp_session_manager import (
 from mcp import StdioServerParameters
 from utils.settings import DEFAULT_MCP_SERVER_URL, DEFAULT_MCP_TOOLS
 
-import warnings
 warnings.filterwarnings("ignore",
                         category=DeprecationWarning,
                         module="google.cloud")
+
+logger = logging.getLogger(__name__)
+
+
+class _NonTextPartsWarningFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        return not (
+            record.levelno == logging.WARNING
+            and record.getMessage().startswith(
+                "Warning: there are non-text parts in the response:"
+            )
+        )
+
+
+logging.getLogger("google_genai.types").addFilter(_NonTextPartsWarningFilter())
+
 
 def _load_mcp_toolsets() -> list[MCPToolset]:
     raw_servers = os.getenv("MCP_SERVERS")
@@ -83,6 +103,32 @@ def _load_mcp_toolsets() -> list[MCPToolset]:
     return toolsets
 
 
+mcp_toolsets = _load_mcp_toolsets()
+
+
+async def list_available_tools() -> list[str]:
+    names = []
+    for toolset in mcp_toolsets:
+        names.extend(tool.name for tool in await toolset.get_tools())
+    return sorted(names)
+
+
+def _log_llm_response(
+    callback_context: CallbackContext,
+    llm_response: LlmResponse,
+) -> None:
+    if llm_response.content is None:
+        return
+
+    response_text = "\n".join(
+        part.text
+        for part in llm_response.content.parts or []
+        if part.text and not part.thought
+    )
+    if response_text:
+        logger.info("LLM response: %s", response_text)
+
+
 root_agent = Agent(
     name="query_companion",
     model="gemini-2.5-flash",
@@ -92,7 +138,11 @@ root_agent = Agent(
     instruction=(
         """You are a helpful agent who can answer user
         questions over knowledge graphs. You should use the provided 
-        tools to gather information and formulate accurate responses."""
+        tools to gather information and formulate accurate responses.
+        MCP tool discovery is handled automatically. When asked to list the
+        available tools, call `list_available_tools`. Do not call the MCP
+        protocol method `list_tools` directly."""
     ),
-    tools=_load_mcp_toolsets(),
+    tools=[*mcp_toolsets, FunctionTool(list_available_tools)],
+    after_model_callback=_log_llm_response,
 )

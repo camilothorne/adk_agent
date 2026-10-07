@@ -29,9 +29,8 @@ export GOOGLE_APPLICATION_CREDENTIALS=<path/to/.config_dir>/.config/gcloud/appli
 ## Running the agent in debug mode
 
 ```bash
-cd query_companion
-echo -e "GOOGLE_GENAI_USE_VERTEXAI=TRUE\nGOOGLE_CLOUD_PROJECT=<PROJECT_ID>\nGOOGLE_CLOUD_LOCATION=<GEMINI_REGION>" >> .env
-adk web
+echo -e "GOOGLE_GENAI_USE_VERTEXAI=TRUE\nGOOGLE_CLOUD_PROJECT=<PROJECT_ID>\nGOOGLE_CLOUD_LOCATION=<GEMINI_REGION>" >> query_companion/.env
+uvicorn query_companion.server:app --host 127.0.0.1 --port 8000 --reload
 ```
 
 ## Importing tools from MCP servers
