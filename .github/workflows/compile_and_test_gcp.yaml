@@ -67,7 +67,7 @@ jobs:
       uses: google-github-actions/setup-gcloud@v3
       with:
          project_id: ${{ env.GCP_PROJECT }}
-         version: 522.0.0
+         version: latest
 
     - name: Configure Docker auth for GCP and push latest image to GCP repo
       run: |   
@@ -97,6 +97,7 @@ jobs:
             --cpu=${{ env.SERVICE_CPU }} \
             --concurrency=${{ env.SERVICE_CONCURRENCY }} \
             --execution-environment=gen2 \
+            --iap \
             --no-allow-unauthenticated \
             --max-instances=1 \
             --service-account=${{ env.GCP_RUNTIME_SA }}
