@@ -14,4 +14,4 @@ COPY utils/ ./utils/
 
 EXPOSE 8080
 
-CMD ["sh", "-c", "exec uvicorn query_companion.server:app --host 0.0.0.0 --port ${PORT:-8080}"]
+CMD ["sh", "-c", "exec adk web --host 0.0.0.0 --port ${PORT:-8080}"]
