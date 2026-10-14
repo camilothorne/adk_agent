@@ -1,6 +1,0 @@
-pytest 
-pytest-cov 
-pytest-asyncio 
-tabulate
-python-dotenv
-google-cloud-aiplatform[evaluation]

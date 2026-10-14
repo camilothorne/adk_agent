@@ -5,8 +5,7 @@ import warnings
 from google.adk.agents import Agent
 from google.adk.agents.callback_context import CallbackContext
 from google.adk.models import LlmResponse
-from google.adk.tools import FunctionTool
-from google.adk.tools.mcp_tool import MCPToolset
+from google.adk.tools import FunctionTool, McpToolset
 from google.adk.tools.mcp_tool.mcp_session_manager import (
     SseServerParams,
     StreamableHTTPServerParams,
@@ -34,7 +33,7 @@ class _NonTextPartsWarningFilter(logging.Filter):
 logging.getLogger("google_genai.types").addFilter(_NonTextPartsWarningFilter())
 
 
-def _load_mcp_toolsets() -> list[MCPToolset]:
+def _load_mcp_toolsets() -> list[McpToolset]:
     raw_servers = os.getenv("MCP_SERVERS")
     if raw_servers is None:
         servers = [
@@ -87,6 +86,7 @@ def _load_mcp_toolsets() -> list[MCPToolset]:
             connection_params = StreamableHTTPServerParams(
                 url=server["url"],
                 headers=server.get("headers"),
+                timeout=60.0,
             )
         else:
             raise ValueError(
@@ -94,7 +94,7 @@ def _load_mcp_toolsets() -> list[MCPToolset]:
             )
 
         toolsets.append(
-            MCPToolset(
+            McpToolset(
                 connection_params=connection_params,
                 tool_filter=server.get("tool_filter"),
             )

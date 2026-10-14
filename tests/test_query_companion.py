@@ -1,6 +1,7 @@
 
 import dotenv
 import pytest
+import warnings
 import vertexai, os
 from google.adk.evaluation.agent_evaluator import AgentEvaluator
 
@@ -8,6 +9,10 @@ import os, sys
 sys.path.insert(0, os.path.abspath(os.getcwd()))  # Adjust the path to your module
 
 pytest_plugins = ("pytest_asyncio",)
+
+warnings.filterwarnings("ignore",
+                        category=DeprecationWarning,
+                        module="google.cloud")
 
 @pytest.fixture(scope="session", autouse=True)
 def load_env():
@@ -26,27 +31,14 @@ def load_env():
 @pytest.mark.asyncio
 async def test_all():
     """
-    Test the agent's basic ability on 10 examples on criteria:
-
-    a) response_match_score      (0.2 threshold)
-    b) response_evaluation_score (2   threshold)
-
-    The evaluation procedure will run each example 2 times, 
-    and uses: 
-
-    - for a) **ROUGE-1 metric** (unigram overlap) to compare the agent's responses with the expected responses
-      ( cf: https://en.wikipedia.org/wiki/ROUGE_(metric) )
-    - for b) **pointwise coherence metric** to evaluate the logical cohesion of the agent's responses
-      ( cf: https://cloud.google.com/vertex-ai/generative-ai/docs/models/metrics-templates#pointwise_coherence )
-
-    The goal of this test is to ensure the agent answers are on topic, even if they are not perfect.
-    
-    We use as test dataset: evalset.test.json
-    We use as configuration file: test_config.json
+    Test the agent's basic ability on criteria defined in:  test_config.json
+    We use as test dataset:                                 evalset.test.json
     """
     print("Running evaluation for query_companion...")
     await AgentEvaluator.evaluate(
+        num_runs=1,
         agent_module="query_companion",
         agent_name="query_companion",
-        eval_dataset_file_path_or_dir="tests/evalset.test.json"
+        eval_dataset_file_path_or_dir=os.path.join(os.path.dirname(__file__), 
+                                                   "evalset.test.json")
     )

@@ -26,6 +26,26 @@ and follow the login instructions. GCP session tokens last for a day (circa 24H)
 export GOOGLE_APPLICATION_CREDENTIALS=<path/to/.config_dir>/.config/gcloud/application_default_credentials.json
 ```
 
+## Configure browser access with IAP
+
+For a personal Google Cloud project, create an external OAuth consent configuration
+and a Web application OAuth client in Google Auth Platform. Add the client ID's IAP
+redirect URI when prompted by the helper below. If the OAuth app is in testing mode,
+add the intended users as test users there as well.
+
+Run the helper after creating the OAuth client:
+
+```bash
+python3 scripts/configure_iap_oauth.py --project <PROJECT_ID>
+```
+
+It enables the IAP API and applies the client ID and secret as project-level IAP
+settings. The secret is prompted without echo and only written temporarily to a
+private temporary file; it is not saved in the repository. Then enable IAP for the
+Cloud Run service in the Console and grant only selected users or groups the
+**IAP-secured Web App User** role in the service's IAP access policy. Keep `--iap`
+in the deployment workflow.
+
 ## Running the agent in debug mode
 
 ```bash
