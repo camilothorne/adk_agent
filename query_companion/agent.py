@@ -11,11 +11,12 @@ from google.adk.tools.mcp_tool.mcp_session_manager import (
     StreamableHTTPServerParams,
 )
 from mcp import StdioServerParameters
-from utils.settings import DEFAULT_MCP_SERVER_URL, DEFAULT_MCP_TOOLS
+from utils.settings import DEFAULT_MCP_SERVER_URL, DEFAULT_MCP_TOOLS, GEMINI_MODEL
+
 
 warnings.filterwarnings("ignore",
-                        category=DeprecationWarning,
-                        module="google.cloud")
+                        category=DeprecationWarning)
+
 
 logger = logging.getLogger(__name__)
 
@@ -131,7 +132,7 @@ def _log_llm_response(
 
 root_agent = Agent(
     name="query_companion",
-    model="gemini-2.5-flash",
+    model=GEMINI_MODEL,
     description=(
         "Agent to answer questions over knowledge graphs."
     ),
